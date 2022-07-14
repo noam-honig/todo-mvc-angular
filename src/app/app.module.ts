@@ -3,6 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
+import { Remult } from 'remult';
+import { AuthService } from './AuthService';
+import { JwtModule } from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
@@ -11,9 +14,16 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    JwtModule.forRoot({
+      config:{
+         tokenGetter: () => AuthService.fromStorage()
+      }
+   })
   ],
-  providers: [],
+  providers: [
+    { provide: Remult, useClass: Remult, deps: [HttpClient] }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

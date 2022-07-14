@@ -1,21 +1,21 @@
-<section class="todoapp">
-  <header class="header">
-    <h1>todos</h1>
-    <input [(ngModel)]="newTaskTitle" class="new-todo" placeholder="What needs to be done?" autoFocus
-      (blur)="createNewTask()" (keydown)="keyDown($event)" />
-  </header>
+<ng-container *ngIf="remult.authenticated();else signInArea">
+  <section class="todoapp">
+    <header class="header">
+      <h1>todos</h1>
+      <input [(ngModel)]="newTaskTitle" class="new-todo" placeholder="What needs to be done?" autoFocus
+        (blur)="createNewTask()" (keydown)="keyDown($event)" />
+    </header>
 
-  <section class="main">
-    <input id="toggle-all" class="toggle-all" type="checkbox" [checked]="setAllChecked()"
-       />
-    <label htmlFor="toggle-all" (click)="setAll(!setAllChecked())">Mark all as complete</label>
-    <ul class="todo-list">
-      <ng-container *ngFor="let task of tasks">
-        <ng-container *ngIf="!hideCompleted||!task.completed">
+    <section class="main">
+      <input id="toggle-all" class="toggle-all" type="checkbox" [checked]="setAllChecked()" />
+      <label htmlFor="toggle-all" (click)="setAll(!setAllChecked())">Mark all as complete</label>
+      <ul class="todo-list">
+        <ng-container *ngFor="let task of tasks">
+
 
           <li [class.completed]="task.completed" *ngIf="!editingTask||task.id!==editingTask.id; else editing">
             <div class="view">
-              <input type="checkbox" [(ngModel)]="task.completed" class="toggle" />
+              <input type="checkbox" [(ngModel)]="task.completed" class="toggle" (change)="save(task)" />
 
               <label (dblclick)="editingTask=task">{{task.title}}</label>
               <button class="destroy" (click)="deleteTask(task)"></button>
@@ -24,25 +24,34 @@
 
           <ng-template #editing>
             <li class="editing">
-              <input class="edit" [(ngModel)]="editingTask!.title" (blur)="editingTask=undefined" />
+              <input class="edit" [(ngModel)]="editingTask!.title" (blur)="endEditing(task)" />
+              <span>{{error?.modelState?.title}}</span>
             </li>
           </ng-template>
         </ng-container>
 
-      </ng-container>
-    </ul>
+      </ul>
+    </section>
+    <footer class="footer">
+      <button (click)="setHideCompleted(false)">All </button>
+      <button (click)="setHideCompleted(true)">Active</button>
+    </footer>
   </section>
-  <footer class="footer">
-    <button (click)="setHideCompleted(false)">All </button>
-    <button (click)="setHideCompleted(true)">Active</button>
-  </footer>
-</section>
 
-<footer class="info">
-  <p>Double-click to edit a todo</p>
-  <p>Based on <a href="http://todomvc.com">TodoMVC</a></p>
-  <p>
-    <a href="https://www.github.com/remult/remult" target="_blank">
-      Give remult a ⭐ on github</a>
-  </p>
-</footer>
+  <footer class="info">
+    <p>Hello {{remult.user.name}} <a (click)="signOut()">Sign out</a></p>
+    <p>Double-click to edit a todo</p>
+    <p>Based on <a href="http://todomvc.com">TodoMVC</a></p>
+    <p>
+      <a href="https://www.github.com/remult/remult" target="_blank">
+        Give remult a ⭐ on github</a>
+    </p>
+  </footer>
+</ng-container>
+<ng-template #signInArea>
+  <div class="signIn">
+    <h1>Sign In</h1>
+    <input [(ngModel)]="username" placeholder="Username, try Steve or Jane" />
+    <button (click)="signIn()">Sign in</button>
+  </div>
+</ng-template>
